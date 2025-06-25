@@ -1,0 +1,31 @@
+{
+  "reviewName": "Find critical defects in code",
+  "llmChatCompletionConfiguration": {
+    "model": "qwen3-8b"
+  },
+  "systemPrompts": [
+    "You are code review assistant."
+  ],
+  "reviewPrompts": [
+    "Please review all these Java files",
+    "Comment style: Human like, friendly, natural, and professional tone; ideal for PRs, reports, and communication."
+  ],
+  "targets": [
+    {
+      "fileGroups": [
+        {
+          "paths": [
+            "src/**.java"
+          ],
+          "rules": [
+            {
+              "code": "001",
+              "description": "Find possible java.lang.ArrayIndexOutOfBoundsException",
+              "severity": "critical"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

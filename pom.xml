@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.quasarbyte.llm.codereview</groupId>
+    <artifactId>llm-code-review-cli</artifactId>
+    <packaging>jar</packaging>
+    <version>0.2.0-SNAPSHOT</version>
+
+    <name>LLM Code Review CLI</name>
+    <url>https://github.com/QuasarByte/llm-code-review-maven-plugin</url>
+    <description>
+        A command-line application for automated code review using Large Language Models (LLMs).
+        Provides AI-powered code analysis from your terminal.
+    </description>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>taluyev</id>
+            <name>Roman Taluyev</name>
+            <email>taluyev+llm-code-review@gmail.com</email>
+            <organization>Roman Taluyev</organization>
+            <url>https://www.linkedin.com/in/taluyev/</url>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/QuasarByte/llm-code-review-maven-plugin</connection>
+        <developerConnection>scm:git:ssh://github.com/QuasarByte/llm-code-review-maven-plugin</developerConnection>
+        <url>https://github.com/QuasarByte/llm-code-review-maven-plugin</url>
+    </scm>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <junit.jupiter.version>5.11.4</junit.jupiter.version>
+        <mockito.version>4.11.0</mockito.version>
+        <jdk.24.home>C:\opt\java\jdk-24.0.1</jdk.24.home>
+    </properties>
+
+    <dependencies>
+        <!-- Picocli for command line parsing -->
+        <dependency>
+            <groupId>info.picocli</groupId>
+            <artifactId>picocli</artifactId>
+            <version>4.7.7</version>
+        </dependency>
+        <!-- Jackson for JSON processing -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.18.2</version>
+        </dependency>
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.17</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.3.14</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>mockwebserver</artifactId>
+            <version>4.12.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.quasarbyte.llm.codereview</groupId>
+            <artifactId>sdk</artifactId>
+            <version>0.2.0-SNAPSHOT</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Configure compiler to only include CLI tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.3</version>
+                <configuration>
+                    <includes>
+                        <include>**/*Test.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.5.3</version>
+                <configuration>
+                    <includes>
+                        <include>**/*IT.java</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Generate third-party license file -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>2.4.0</version>
+                <executions>
+                    <execution>
+                        <id>add-third-party</id>
+                        <goals>
+                            <goal>add-third-party</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}/META-INF</outputDirectory>
+                            <thirdPartyFilename>THIRD-PARTY-LICENSES.txt</thirdPartyFilename>
+                            <includeTransitiveDependencies>true</includeTransitiveDependencies>
+                            <excludedScopes>test</excludedScopes>
+                            <failOnMissing>false</failOnMissing>
+                            <useMissingFile>true</useMissingFile>
+                            <missingFile>src/license/THIRD-PARTY.properties</missingFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.2</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.quasarbyte.llm.codereview.cli.LlmCodeReviewCli</mainClass>
+                                </transformer>
+                                <!-- Merge service files -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <!-- Handle license files from dependencies -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"/>
+                                <!-- Append NOTICE files -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/NOTICE</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/NOTICE.txt</resource>
+                                </transformer>
+                                <!-- Handle Spring Boot configuration files -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.factories</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.schemas</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.handlers</resource>
+                                </transformer>
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <!-- Exclude module-info.class files that cause warnings -->
+                                        <exclude>module-info.class</exclude>
+                                        <exclude>META-INF/versions/*/module-info.class</exclude>
+                                        <!-- Exclude technical files that cause harmless warnings -->
+                                        <exclude>META-INF/DEPENDENCIES</exclude>
+                                        <exclude>META-INF/*.kotlin_module</exclude>
+                                        <!-- Exclude manifest files (shade creates its own) -->
+                                        <exclude>META-INF/MANIFEST.MF</exclude>
+                                        <!-- Exclude duplicate licensing files (handled by ApacheLicenseResourceTransformer) -->
+                                        <exclude>META-INF/LICENSE</exclude>
+                                        <exclude>META-INF/LICENSE.txt</exclude>
+                                        <!-- Exclude duplicate NOTICE files (handled by AppendingTransformer) -->
+                                        <exclude>META-INF/NOTICE</exclude>
+                                        <exclude>META-INF/NOTICE.txt</exclude>
+                                        <!-- Exclude Maven metadata that causes overlaps -->
+                                        <exclude>META-INF/maven/**</exclude>
+                                        <!-- Exclude signature files -->
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                        <!-- Exclude Kotlin metadata that causes overlaps -->
+                                        <exclude>**/*.kotlin_metadata</exclude>
+                                        <!-- Note: DO NOT exclude *.kotlin_builtins as Jackson Kotlin module needs them for reflection -->
+                                        <!-- Exclude version files -->
+                                        <exclude>META-INF/versions/**</exclude>
+                                        <!-- Exclude native image configurations -->
+                                        <exclude>META-INF/native-image/**</exclude>
+                                        <!-- Exclude ProGuard configurations -->
+                                        <exclude>META-INF/proguard/**</exclude>
+                                        <!-- Exclude Android tools configurations -->
+                                        <exclude>META-INF/com.android.tools/**</exclude>
+                                    </excludes>
+                                </filter>
+                                <!-- Keep our own project classes and resources (including THIRD-PARTY-LICENSES.txt) -->
+                                <filter>
+                                    <artifact>com.quasarbyte.llm.codereview:llm-code-review-cli</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+                                <!-- Keep our SDK classes -->
+                                <filter>
+                                    <artifact>com.quasarbyte.llm.codereview:sdk</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+                            </filters>
+                            <!-- Relocate packages to avoid conflicts -->
+                            <relocations>
+                                <relocation>
+                                    <pattern>com.google.common</pattern>
+                                    <shadedPattern>shaded.com.google.common</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.commons</pattern>
+                                    <shadedPattern>shaded.org.apache.commons</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.http</pattern>
+                                    <shadedPattern>shaded.org.apache.http</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>okio</pattern>
+                                    <shadedPattern>shaded.okio</shadedPattern>
+                                    <excludes>
+                                        <exclude>okio.*</exclude>
+                                    </excludes>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>jdk-11-plus</id>
+            <activation>
+                <!--
+                    Automatically activates if Maven is run with JDK 11 or higher.
+                    This profile is a temporary workaround to restore JAXB support,
+                    since JAXB was removed from the JDK after Java 8.
+                -->
+                <jdk>[11,)</jdk>
+            </activation>
+            <dependencies>
+                <!--
+                    TEMPORARY SOLUTION:
+                    Adds legacy JAXB dependencies (javax.xml.bind and com.sun.xml.bind)
+                    to enable JAXB support on JDK 11 and newer.
+                    These versions are compatible with JDK 11 and work for demo/migration purposes.
+
+                    NOTE FOR ENGINEERS:
+                    For long-term support and compatibility with the latest Java (17, 21+),
+                    consider updating these dependencies to 'jakarta.xml.bind' API and runtime
+                    (see jakarta.xml.bind:jakarta.xml.bind-api and org.glassfish.jaxb:jaxb-runtime).
+                    See https://projects.eclipse.org/projects/ee4j.jaxb for details.
+                -->
+                <dependency>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-core</artifactId>
+                    <version>2.3.0.1</version>
+                </dependency>
+                <dependency>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                    <version>2.3.1</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-impl</artifactId>
+                    <version>2.3.1</version>
+                </dependency>
+            </dependencies>
+            <properties>
+                <!--
+                    Set Java compilation target to 11.
+                    Adjust this value according to your team's base JDK.
+                -->
+                <maven.compiler.source>11</maven.compiler.source>
+                <maven.compiler.target>11</maven.compiler.target>
+            </properties>
+        </profile>
+
+        <!-- JRE pack with jlink, no modules, just runtime + jar and launcher -->
+        <profile>
+            <id>portable-jre</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+
+            <dependencies>
+
+            </dependencies>
+
+            <build>
+                <plugins>
+                    <!-- 1. jlink: build minimal JRE -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>run-jlink</id>
+                                <phase>package</phase>
+                                <configuration>
+                                    <target>
+                                        <mkdir dir="${project.build.directory}/portable"/>
+                                        <exec executable="${jdk.24.home}/bin/jlink">
+                                            <arg value="--module-path"/>
+                                            <arg value="${jdk.24.home}/jmods"/>
+                                            <arg value="--add-modules"/>
+                                            <arg value="java.base,java.compiler,java.datatransfer,java.desktop,java.instrument,java.logging,java.management,java.management.rmi,java.naming,java.net.http,java.prefs,java.rmi,java.scripting,java.se,java.security.jgss,java.security.sasl,java.sql,java.sql.rowset,java.transaction.xa,java.xml,java.xml.crypto"/>
+                                            <arg value="--output"/>
+                                            <arg value="${project.build.directory}/portable/jre"/>
+                                            <arg value="--compress"/>
+                                            <arg value="2"/>
+                                            <arg value="--no-header-files"/>
+                                            <arg value="--no-man-pages"/>
+                                            <arg value="--strip-debug"/>
+                                        </exec>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.3.1</version>
+                        <executions>
+                            <execution>
+                                <id>copy-portable-resources</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/portable</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.build.directory}</directory>
+                                            <includes>
+                                                <include>${project.build.finalName}.jar</include>
+                                            </includes>
+                                        </resource>
+                                        <resource>
+                                            <directory>portable-launcher</directory>
+                                            <includes>
+                                                <include>**/*</include>
+                                            </includes>
+                                            <filtering>false</filtering>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>3.6.0</version>
+                        <executions>
+                            <execution>
+                                <id>make-portable-archive</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <finalName>llm-code-review-portable</finalName>
+                                    <formats>
+                                        <format>zip</format>
+                                    </formats>
+                                    <descriptors>
+                                        <descriptor>src/assembly/portable.xml</descriptor>
+                                    </descriptors>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Database profiles for testing -->
+        <profile>
+            <id>test-memory</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <test.db.type>memory</test.db.type>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>test-temp</id>
+            <properties>
+                <test.db.type>temp</test.db.type>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>test-target</id>
+            <properties>
+                <test.db.type>target</test.db.type>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>test-mysql</id>
+            <properties>
+                <test.db.type>mysql</test.db.type>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>test-postgresql</id>
+            <properties>
+                <test.db.type>postgresql</test.db.type>
+            </properties>
+        </profile>
+
+    </profiles>
+</project>

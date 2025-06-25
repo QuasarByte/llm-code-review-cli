@@ -1,0 +1,13 @@
+{
+  "dataSourceConfiguration": {
+    "jdbcUrl": "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1",
+    "username": "sa",
+    "password": "",
+    "driverClassName": "org.h2.Driver",
+    "properties": {
+      "hibernate.dialect": "org.hibernate.dialect.H2Dialect",
+      "hibernate.hbm2ddl.auto": "create-drop"
+    }
+  },
+  "persistFileContent": true
+}

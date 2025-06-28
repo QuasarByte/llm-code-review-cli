@@ -7,7 +7,7 @@
     <groupId>com.quasarbyte.llm.codereview</groupId>
     <artifactId>llm-code-review-cli</artifactId>
     <packaging>jar</packaging>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>0.2.1-SNAPSHOT</version>
 
     <name>LLM Code Review CLI</name>
     <url>https://github.com/QuasarByte/llm-code-review-maven-plugin</url>
@@ -105,7 +105,7 @@
         <dependency>
             <groupId>com.quasarbyte.llm.codereview</groupId>
             <artifactId>sdk</artifactId>
-            <version>0.2.0-SNAPSHOT</version>
+            <version>0.2.1-SNAPSHOT</version>
         </dependency>
 
     </dependencies>
